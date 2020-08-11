@@ -165,6 +165,7 @@ parts:
       ./configure \
           --enable-slurmrestd \
           --enable-front-end \
+          --enable-multiple-slurmd \
           --with-munge=$SNAPCRAFT_STAGE/usr/local \
           --with-libcurl=$SNAPCRAFT_STAGE/usr/local \
           --with-http-parser=$SNAPCRAFT_STAGE/usr/local \
