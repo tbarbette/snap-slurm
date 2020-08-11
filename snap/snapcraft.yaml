@@ -109,7 +109,6 @@ apps:
 parts:
   slurm:
     after:
-      - libcurl
       - json-c
       - libyaml
       - http-parser
@@ -133,6 +132,7 @@ parts:
       - libglib2.0-dev
       - libibmad-dev
       - libibumad-dev
+      - libcurl4-gnutls-dev
     stage-packages:
       - liblua5.3-dev
       - libmysqlclient-dev
@@ -142,6 +142,12 @@ parts:
       - util-linux
       - libibmad-dev
       - libibumad-dev
+      - libbrotli1
+      - libcurl3-gnutls
+      - libnghttp2-14
+      - libpsl5
+      - librtmp1
+      - libssh-4
     stage:
       - bin/
       - share/
@@ -164,8 +170,8 @@ parts:
       snapcraftctl build
       ./configure \
           --enable-slurmrestd \
+          --with-libcurl \
           --with-munge=$SNAPCRAFT_STAGE/usr/local \
-          --with-libcurl=$SNAPCRAFT_STAGE/usr/local \
           --with-http-parser=$SNAPCRAFT_STAGE/usr/local \
           --with-yaml=$SNAPCRAFT_STAGE/usr/local \
           --with-json=$SNAPCRAFT_STAGE/usr/local \
@@ -379,41 +385,15 @@ parts:
     prime:
       - usr/
 
-  libcurl:
-    plugin: dump
-    source: https://github.com/curl/curl.git
-    source-type: git
-    source-depth: 1
-    source-tag: curl-7_62_0
-    build-packages:
-      - libtool
-      - libssl-dev
-      - autoconf
-      - automake
-      - make
-    stage:
-      - usr/
-    prime:
-      - usr/
-    override-build: |
-      snapcraftctl build
-      ./buildconf
-      ./configure --with-ssl --prefix=$SNAPCRAFT_PART_INSTALL/usr/local
-      make -j9
-      make install
-
   slurm-configurator:
-    plugin: dump 
+    plugin: python
     source: src/slurm-configurator/
-    source-type: local
-    build-packages:
-      - python3-all
-      - python3-pip
-      - python3-venv
+    stage:
+      - -lib64/
+      - templates/
     override-build: |
       snapcraftctl build
-      python3 -m venv $SNAPCRAFT_PART_INSTALL/venv
-      $SNAPCRAFT_PART_INSTALL/venv/bin/pip3 install -U pyyaml jinja2
+      cp -r $SNAPCRAFT_PART_BUILD/templates $SNAPCRAFT_PART_INSTALL/
 
   slurm-bins:
     plugin: dump
