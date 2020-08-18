@@ -1,4 +1,3 @@
- 
 #!/bin/bash
 
 set -e
@@ -16,4 +15,4 @@ export CONFIG_FILE="/var/snap/slurm/common/etc/nhc/nhc.conf"
 export CONFIG_DIR="/var/snap/slurm/common/etc/nhc"
 export HELPERDIR="/var/snap/slurm/common/usr/lib/nhc"
 
-exec "/snap/slurm/current/usr/sbin/nhc" "-d" "-l" "$LOG_FILE" "-c" "$CONFIG_FILE" -D "$CONFIG_DIR" "HELPERDIR=$HELPERDIR"
+/snap/slurm/current/usr/sbin/nhc -d -l $LOG_FILE -c $CONFIG_FILE -D $CONFIG_DIR HELPERDIR=$HELPERDIR
