@@ -364,7 +364,6 @@ parts:
       - automake
       - libtool
       - autotools-dev
-      - aclocal
     stage:
       - usr/
     prime:
