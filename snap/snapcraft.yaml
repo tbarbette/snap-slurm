@@ -360,8 +360,10 @@ parts:
     build-packages:
       - make
       - gcc
-      - libtool
       - autoconf
+      - automake
+      - libtool
+      - autotools-dev
     stage:
       - usr/
     prime:
@@ -405,29 +407,3 @@ parts:
     source: src/hooks/
     organize:
       bin/: snap/hooks/
-
-  nhc-bin:
-    plugin: dump
-    source: src/nhc/
-    source-type: local
-
-  nhc:
-    plugin: dump
-    source: https://github.com/omnivector-solutions/nhc.git
-    source-tag: 1.4.2-omni
-    source-depth: 1
-    build-packages:
-      - automake
-      - make
-    stage:
-      - usr/
-      - nhc.conf
-    prime:
-      - usr/
-      - nhc.conf
-    override-build: |
-      snapcraftctl build
-      ./autogen.sh
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr --libexecdir=$SNAPCRAFT_PART_INSTALL/usr/lib
-      make
-      make install

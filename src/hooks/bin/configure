@@ -161,8 +161,8 @@ def render_slurm_conf(slurm_node_type):
         # Slurmd and slurmctld need identical config.
         # Thus we only render a single config file to be
         # used by both daemons.
-
-        lscpu = open("/tmp/lscpu", "r").read().replace("(s)", "")
+        lscpu_out = f"{os.environ['SNAP_COMMON']}/snap-resources/lscpu"
+        lscpu = Path(lscpu_out).read_text().replace("(s)", "")
         node_attributes = {'CPU:': '', 'Thread per core:': '', 'Core per socket:': '', 'Socket:': ''}
         try:
             for key in node_attributes:

@@ -88,7 +88,6 @@ or by using using the journal directly:
 
 Certain services also write to log files which is only readble by root for security purposes. The following services write to log files:
 
-- nhc
 - slurmd
 - slurmdbd
 - slurmctld
@@ -112,12 +111,6 @@ To apply any configuration changes to the above file, you need to restart the sl
     snap set slurm snap.mode=all
 
 This will render the slurm.yaml -> slurm.conf and restart the appropriate daemons.
-
-To modify the Node Healthcheck configuration, edit the file located here:
-
-    /var/snap/slurm/common/etc/nhc/nhc.conf
-
-NHC is run automatically by Slurmd and changes to `nhc.conf` take effect immediately.
 
 When configuring Slurm to run as part of a large-scale compute cluster, remember to adjust the system configuration files according. More information about this can be found [here](https://slurm.schedmd.com/big_sys.html). 
 
