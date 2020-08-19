@@ -360,8 +360,11 @@ parts:
     build-packages:
       - make
       - gcc
-      - libtool
       - autoconf
+      - automake
+      - libtool
+      - autotools-dev
+      - aclocal
     stage:
       - usr/
     prime:
