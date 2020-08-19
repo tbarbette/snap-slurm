@@ -401,3 +401,9 @@ parts:
     plugin: dump
     source: src/slurm-bins/
     source-type: local
+
+  hooks:
+    plugin: dump
+    source: src/hooks/
+    organize:
+      bin/: snap/hooks/
