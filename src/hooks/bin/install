@@ -18,9 +18,18 @@ mkdir -p "$SNAP_COMMON/var/run"
 # SLURM LOG DIR
 mkdir -p "$SNAP_COMMON/var/log/slurm"
 
-# CREATE /var dirs
-mkdir -p "$SNAP_COMMON"/var/spool/slurm/{ctld,d}
-#chmod -R 755 $SNAP_COMMON/var/spool
+# CREATE spool dir, state dir, and state files
+mkdir -p "$SNAP_COMMON/var/spool/slurmd"
+mkdir -p "$SNAP_COMMON/var/lib/slurmd"
+touch "$SNAP_COMMON/var/lib/slurmd/node_state"
+touch "$SNAP_COMMON/var/lib/slurmd/front_end_state"
+touch "$SNAP_COMMON/var/lib/slurmd/job_state"
+touch "$SNAP_COMMON/var/lib/slurmd/resv_state"
+touch "$SNAP_COMMON/var/lib/slurmd/trigger_state"
+touch "$SNAP_COMMON/var/lib/slurmd/assoc_mgr_state"
+touch "$SNAP_COMMON/var/lib/slurmd/assoc_usage"
+touch "$SNAP_COMMON/var/lib/slurmd/qos_usage"
+touch "$SNAP_COMMON/var/lib/slurmd/fed_mgr_state"
 
 # SLURM-CONFIGURATOR DIR
 mkdir -p "$SNAP_COMMON/etc/slurm-configurator"
