@@ -3,6 +3,8 @@
 set -e
 export PROCS=$(nproc)
 
+export LD_LIBRARY_PATH="$SNAP/usr/lib/x86_64-linux-gnu/"
+
 # Check to see if we should even start
 snap_mode=$(cat $SNAP_COMMON/snap_mode)
 if ! [[ $snap_mode == "slurmdbd" || $snap_mode == "slurmctld" || $snap_mode == "slurmd" || $snap_mode == "slurmrestd" || $snap_mode = "all" ]]; then
@@ -11,7 +13,7 @@ fi
 
 exec "$SNAP/usr/local/sbin/munged" \
      "--key-file=$SNAP_COMMON/etc/munge/munge.key" \
-     "--socket=/tmp/munged.socket.2" \
+     "--socket=$SNAP_COMMON/var/run/munge/munged.socket.2" \
      "--pid-file=$SNAP_COMMON/var/run/munge/munged.pid" \
      "--seed-file=$SNAP_COMMON/var/lib/munge/munge.seed" \
      "--num-threads=${PROCS}" "--foreground" "--group-check-mtime=0" "$@"
