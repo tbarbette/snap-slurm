@@ -255,6 +255,7 @@ parts:
       # Remove scripts that we'll be replacing with our own
       - -support-files/mysql.server
       - -COPYING
+      - -usr/share/doc/linux-libc-dev/changelog.Debian.gz
     prime:
       # Remove scripts that we'll be replacing with our own
       - -support-files/mysql.server
@@ -307,6 +308,7 @@ parts:
       - libtool
       - zlib1g-dev
       - libbz2-dev
+      - libgcrypt20-dev
     stage-packages:
       - libc6
       - libbz2-1.0
@@ -320,7 +322,7 @@ parts:
     override-build: |
       snapcraftctl build
       ./bootstrap
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local
+      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local --with-crypto-lib=libgcrypt
       make
       make install
   munge-customizations:
