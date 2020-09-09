@@ -70,7 +70,7 @@ chmod -R 0711 "$SNAP_COMMON/var/lib/munge"
 # It also contains the daemon's pid file. This directory must allow execute permissions for all.
 # The recommended permissions for it are 0755.
 mkdir -p "$SNAP_COMMON/var/run/munge"
-chmod -R 0755 "$SNAP_COMMON/var/run"
+chmod -R 0755 "$SNAP_COMMON/var/run/munge"
 
 # Copy the logrotate.conf into SNAP_COMMON
 cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"

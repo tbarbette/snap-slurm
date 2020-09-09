@@ -260,7 +260,6 @@ parts:
       # Remove scripts that we'll be replacing with our own
       - -support-files/mysql.server
       - -COPYING
-      - -usr/share/doc/linux-libc-dev/changelog.Debian.gz
     prime:
       # Remove scripts that we'll be replacing with our own
       - -support-files/mysql.server

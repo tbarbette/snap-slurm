@@ -9,9 +9,9 @@ SlurmdUser="root"
 
 
 AuthType="auth/munge"
-AuthInfo="socket=/var/snap/slurm/common/var/run/munge/munged.socket.2"
+AuthInfo="socket=/tmp/munged.socket.2"
 
-AccountingStoragePass="/var/snap/slurm/common/var/run/munge/munged.socket.2"
+AccountingStoragePass="/tmp/munged.socket.2"
 
 AccountingStorageType="accounting_storage/slurmdbd"
 AccountingStoragePort=6819
