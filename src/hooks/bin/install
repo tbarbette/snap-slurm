@@ -76,5 +76,5 @@ chmod -R 0755 "$SNAP_COMMON/var/run"
 cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"
 
 # Info for Slurm node configuration
-mkdir "$SNAP_COMMON/snap-resources"
+mkdir -p "$SNAP_COMMON/snap-resources"
 lscpu > "$SNAP_COMMON/snap-resources/lscpu"
