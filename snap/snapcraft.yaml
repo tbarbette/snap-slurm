@@ -12,6 +12,11 @@ confinement: classic
 base: core20
 
 apps:
+  logrotate:
+    daemon: oneshot
+    command: sbin/logrotate $SNAP_COMMON/etc/logrotate.conf
+    timer: "00:00-24:00/288"
+
   mysql:
     command: bin/start_mysql
     stop-command: support-files/mysql.server stop
@@ -307,6 +312,7 @@ parts:
       - libtool
       - zlib1g-dev
       - libbz2-dev
+      - libgcrypt20-dev
     stage-packages:
       - libc6
       - libbz2-1.0
@@ -320,7 +326,7 @@ parts:
     override-build: |
       snapcraftctl build
       ./bootstrap
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local
+      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local --with-crypto-lib=libgcrypt
       make
       make install
   munge-customizations:
@@ -407,3 +413,33 @@ parts:
     source: src/hooks/
     organize:
       bin/: snap/hooks/
+
+  logrotate:
+    plugin: dump
+    source: https://github.com/logrotate/logrotate.git
+    source-tag: 3.17.0
+    stage-packages:
+      - bzip2
+    build-packages:
+      - autoconf
+      - automake
+      - libpopt-dev
+      - libtool
+      - make
+      - xz-utils
+    override-build: |
+      snapcraftctl build
+      autoreconf -fiv
+      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/
+      make
+      make install
+    stage:
+      - sbin/
+      - lib/
+      - lib64/
+      - bin/
+  logrotate-conf:
+    plugin: dump
+    source: src/logrotate/
+    stage:
+      - etc/
