@@ -29,7 +29,7 @@ jobs:
 
       - name: Cache built snap
         if: ${{ success() }}
-        id: license-manager-snap
+        id: slurm-snap
         uses: actions/cache@v2
         with:
           path: ${{ steps.vars.outputs.snap_file }}
