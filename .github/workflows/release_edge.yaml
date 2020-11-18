@@ -1,7 +1,7 @@
 name: ReleaseEdge
   
 on:
-  commit:
+  push:
     branch:
       - develop
 
