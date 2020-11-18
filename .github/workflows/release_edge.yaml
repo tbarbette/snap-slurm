@@ -44,5 +44,5 @@ jobs:
       - name: "Push snap to snapstore edge"
         run: |
           mkdir .snapcraft
-          echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
+          echo ${{ secrets.SNAPCRAFT_LOGIN_FILE }} | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
           snapcraft push ${{needs.build-snap.outputs.snap_file}} --release edge
