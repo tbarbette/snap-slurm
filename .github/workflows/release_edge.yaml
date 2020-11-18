@@ -1,0 +1,48 @@
+name: ReleaseEdge
+  
+on:
+  commit:
+    branch:
+      - master
+
+jobs:
+  build-snap:
+    name: "Build the slurm snap"
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: "Install Snapcraft"
+        uses: samuelmeuli/action-snapcraft@v1
+        with:
+          use_lxd: true
+
+      - name: "Build the snap"
+        run: sg lxd -c 'snapcraft --use-lxd'
+
+      - name: "Store snap filename for later use"
+        if: ${{ success() }}
+        id: vars
+        run: |
+          echo "::set-output name=snap_file::$(ls *.snap)"
+          echo "::set-output name=snap_hash::${{hashFiles('*.snap')}}"
+
+  release-edge: 
+    name: "Release the slurm snap to edge"
+    runs-on: "ubuntu-latest"
+    needs: build-snap
+    steps:
+      - name: "Restore the slurm snap"
+        uses: actions/cache@v2
+        with:
+          path: ${{needs.build-snap.outputs.snap_file}}
+          key: slurm-snap-${{ needs.build-snap.outputs.snap_hash }}
+
+      - name: "Install Snapcraft"
+        uses: samuelmeuli/action-snapcraft@v1
+
+      - name: "Push snap to snapstore edge"
+        run: |
+          mkdir .snapcraft
+          echo $SNAPCRAFT_LOGIN_FILE | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
+          snapcraft push ${{needs.build-snap.outputs.snap_file}} --release edge
