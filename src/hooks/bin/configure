@@ -8,15 +8,12 @@ from pathlib import Path
 
 
 SNAP_MODE_PROCESS_MAP = {
-    "slurmdbd+mysql": ["munged", "slurmdbd", "mysql"],
     "slurmdbd": ["munged", "slurmdbd"],
     "slurmctld": ["munged", "slurmctld"],
     "slurmd": ["munged", "slurmd"],
     "slurmrestd": ["munged", "slurmrestd"],
     "all": [
         "munged",
-        "mysql",
-        "slurmdbd",
         "slurmctld",
         "slurmd",
         "slurmrestd",
@@ -117,7 +114,6 @@ def stop_all_daemons():
 
     daemons = [
         f"{os.environ['SNAP_INSTANCE_NAME']}.munged",
-        f"{os.environ['SNAP_INSTANCE_NAME']}.mysql",
         f"{os.environ['SNAP_INSTANCE_NAME']}.slurmdbd",
         f"{os.environ['SNAP_INSTANCE_NAME']}.slurmctld",
         f"{os.environ['SNAP_INSTANCE_NAME']}.slurmd",
@@ -130,7 +126,7 @@ def stop_all_daemons():
             pass
 
 
-def render_slurm_conf(slurm_node_type):
+def render_slurm_conf():
     hostname = socket.gethostname().split(".")[0]
 
     # Base path where the slurm template config live.
@@ -144,52 +140,37 @@ def render_slurm_conf(slurm_node_type):
     # This allows the snap to run in "all" mode where we don't have
     # juju to configure us.
     ctxt = {}
-    if slurm_node_type == "slurmdbd":
-        # The file where mysql writes the slurm user password
-        # slurmdb_password_file = Path(
-        #    f"{os.environ['SNAP_DATA']}/mysql/slurmdb_password"
-        # )
+    # Slurmd and slurmctld need identical config.
+    # Thus we only render a single config file to be
+    # used by both daemons.
+    lscpu_out = f"{os.environ['SNAP_COMMON']}/snap-resources/lscpu"
+    lscpu = Path(lscpu_out).read_text().replace("(s)", "")
+    node_attributes = {'CPU:': '', 'Thread per core:': '', 'Core per socket:': '', 'Socket:': ''}
+    try:
+        for key in node_attributes:
+            attribute_match = re.search(f"{key}.*", lscpu).group()
+            attribute_type = attribute_match.replace(f"{key}", "").replace(" ", "")
+            node_attributes[key] = attribute_type
+    except Exception as error:
+        print(f"Unable to set Node configuration: {error}")
 
-        # if slurmdb_password_file.exists():
-        #    slurmdb_password = slurmdb_password_file.read_text()
-        ctxt['DbdHost'] = hostname
-        ctxt['DbdAddr'] = hostname
-        ctxt['StorageHost'] = "127.0.0.1"
-        ctxt['StoragePass'] = "changeme"
-
-    else:
-        # Slurmd and slurmctld need identical config.
-        # Thus we only render a single config file to be
-        # used by both daemons.
-        lscpu_out = f"{os.environ['SNAP_COMMON']}/snap-resources/lscpu"
-        lscpu = Path(lscpu_out).read_text().replace("(s)", "")
-        node_attributes = {'CPU:': '', 'Thread per core:': '', 'Core per socket:': '', 'Socket:': ''}
-        try:
-            for key in node_attributes:
-                attribute_match = re.search(f"{key}.*", lscpu).group()
-                attribute_type = attribute_match.replace(f"{key}", "").replace(" ", "")
-                node_attributes[key] = attribute_type
-        except Exception as error:
-            print(f"Unable to set Node configuration: {error}")
-
-        # Define slurm configs specific to slurmd and slurmctld.
-        ctxt = {}
-        ctxt['AccountingStorageHost'] = hostname
-        ctxt['SlurmctldHost'] = hostname
-        ctxt['NodeName'] = (
-            f"{hostname} NodeAddr={hostname} "
-            f"CPUs={node_attributes['CPU:']} "
-            f"ThreadsPerCore={node_attributes['Thread per core:']} "
-            f"CoresPerSocket={node_attributes['Core per socket:']} "
-            f"Sockets={node_attributes['Socket:']} "
-        )
-        ctxt['PartitionName'] = (
-            f"debug Nodes={hostname} "
-            "Default=YES State=UP"
-        )
+    # Define slurm configs specific to slurmd and slurmctld.
+    ctxt = {}
+    ctxt['SlurmctldHost'] = hostname
+    ctxt['NodeName'] = (
+        f"{hostname} NodeAddr={hostname} "
+        f"CPUs={node_attributes['CPU:']} "
+        f"ThreadsPerCore={node_attributes['Thread per core:']} "
+        f"CoresPerSocket={node_attributes['Core per socket:']} "
+        f"Sockets={node_attributes['Socket:']} "
+    )
+    ctxt['PartitionName'] = (
+        f"debug Nodes={hostname} "
+        "Default=YES State=UP"
+    )
 
     # Load, merge and render the template and ctxt into the slurmdbd.conf.
-    f = slurm_configurator_templates_base_path / f"{slurm_node_type}.conf.tmpl"
+    f = slurm_configurator_templates_base_path / "slurm.conf.tmpl"
     return f.read_text().format(**ctxt)
 
 
@@ -207,27 +188,11 @@ def configure_snap_mode_and_render_slurm_config(snap_mode_from_snap_config):
             # Write out the new snap mode
             snap_mode_path.write_text(snap_mode_from_snap_config)
 
-    def render_config_for_config_type(slurm_config_types):
-        for config_type in slurm_config_types:
-            slurm_conf_file = Path(
-                f"{os.environ['SNAP_COMMON']}/etc/slurm/{config_type}.conf"
-            )
-            slurm_conf_file.write_text(render_slurm_conf(config_type))
-            slurm_conf_file.chmod(0o777)
-
-    # Render appropriate slurm config files
-    #
-    # slurmdbd.conf for slurmdbd or slurdbd+mysql
-    # slurm.conf for any other snap.mode configuration
-    slurm_config_types = []
-    # Find out what config files we need to write
-    if snap_mode_from_snap_config == "all":
-        slurm_config_types.append("slurm")
-        slurm_config_types.append("slurmdbd")
-        render_config_for_config_type(slurm_config_types)
-    elif snap_mode_from_snap_config == "slurmdbd+mysql":
-        slurm_config_types.append("slurmdbd")
-        render_config_for_config_type(slurm_config_types)
+    slurm_conf_file = Path(
+        f"{os.environ['SNAP_COMMON']}/etc/slurm/slurm.conf"
+    )
+    slurm_conf_file.write_text(render_slurm_conf())
+    slurm_conf_file.chmod(0o777)
 
 
 if __name__ == "__main__":

@@ -11,10 +11,8 @@ SlurmdUser="root"
 AuthType="auth/munge"
 AuthInfo="socket=/tmp/munged.socket.2"
 
-AccountingStoragePass="/tmp/munged.socket.2"
+DefaultStorageType=filetxt
 
-AccountingStorageType="accounting_storage/slurmdbd"
-AccountingStoragePort=6819
 
 JobAcctGatherType="jobacct_gather/linux"
 JobAcctGatherFrequency=30
@@ -47,8 +45,6 @@ ReturnToService=0
 
 ProcTrackType="proctrack/linuxproc"
 
-
-AccountingStorageHost={AccountingStorageHost}
 SlurmctldHost={SlurmctldHost}
 
 NodeName={NodeName}
