@@ -27,6 +27,10 @@ jobs:
           echo "::set-output name=snap_file::$(ls *.snap)"
           echo "::set-output name=snap_hash::${{hashFiles('*.snap')}}"
 
+    outputs:
+      snap_file: ${{ steps.vars.outputs.snap_file }}
+      snap_hash: ${{ steps.vars.outputs.snap_hash }}
+
   release-edge: 
     name: "Release the slurm snap to edge"
     runs-on: "ubuntu-latest"
