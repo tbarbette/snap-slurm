@@ -170,7 +170,7 @@ def render_slurm_conf():
     )
 
     # Load, merge and render the template and ctxt into the slurmdbd.conf.
-    f = slurm_configurator_templates_base_path / f"slurm.conf.tmpl"
+    f = slurm_configurator_templates_base_path / "slurm.conf.tmpl"
     return f.read_text().format(**ctxt)
 
 
