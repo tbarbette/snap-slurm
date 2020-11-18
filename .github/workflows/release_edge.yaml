@@ -39,31 +39,6 @@ jobs:
       snap_file: ${{ steps.vars.outputs.snap_file }}
       snap_hash: ${{ steps.vars.outputs.snap_hash }}
 
-
-  job_artifacts:
-    name: Artifacts Upload
-    needs: build-snap
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Restore the slurm snap"
-        uses: actions/cache@v2
-        with:
-          path: ${{needs.build-snap.outputs.snap_file}}
-          key: slurm-snap-${{ needs.build-snap.outputs.snap_hash }}
-
-      - name: Archive Artifacts
-        uses: actions/upload-artifact@v2
-        with:
-          name: ${{ github.sha }}
-          path: |
-            ${{ github.workspace }}/*.snap
-
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-
-    outputs:
-      snap_file: ${{ steps.vars.outputs.snap_file }}
-      snap_hash: ${{ steps.vars.outputs.snap_hash }}
-
   release-edge: 
     name: "Release the slurm snap to edge"
     runs-on: "ubuntu-latest"
