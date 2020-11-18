@@ -147,7 +147,7 @@ jobs:
         shell: bash
         run: |
           for charm in slurmctld slurmd slurmrestd slurm-configurator slurmdbd; do
-            juju deploy ./$charm.charm --series ${{ matrix.os }} --bind igw
+            juju deploy ./$charm.charm --series ${{ matrix.os }} --bind igw --resource slurm-snap=${{needs.build-snap.outputs.snap_file}}
           done
           juju deploy percona-cluster --bind igw
 
