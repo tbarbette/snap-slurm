@@ -44,9 +44,9 @@ jobs:
 
       - name: "Install Snapcraft"
         uses: samuelmeuli/action-snapcraft@v1
+        with:
+          snapcraft_token: ${{ secrets.snapcraft_token }}
 
       - name: "Push snap to snapstore edge"
         run: |
-          mkdir .snapcraft
-          echo ${{ secrets.SNAPCRAFT_LOGIN_FILE }} | base64 --decode --ignore-garbage > .snapcraft/snapcraft.cfg
           snapcraft push ${{needs.build-snap.outputs.snap_file}} --release edge
