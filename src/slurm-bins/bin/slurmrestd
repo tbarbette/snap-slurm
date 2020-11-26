@@ -31,5 +31,4 @@ fi
 
 pprint "Starting SLURMRESTD";
 exec "$SNAP/slurm-bins/slurmrestd" \
-    "-f" "$SLURM_CONF" \
-    "-vvvvv" `hostname -s`:6820 "$@" 
+    "-f" "$SLURM_CONF" `hostname -s`:6820 "$@" 
