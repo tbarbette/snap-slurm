@@ -40,4 +40,4 @@ pprint "Starting SLURMCTLD";
 exec "$SNAP/slurm-bins/slurmctld" \
     "-f" "$SLURM_CONF" \
     "-L" "$SLURMCTLD_LOG" \
-    "-cDvvvvv" "$@"
+    "-Dvvvvv" "$@"
