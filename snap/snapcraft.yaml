@@ -113,7 +113,7 @@ parts:
       - http-parser
       - munge
     plugin: dump
-    source: https://download.schedmd.com/slurm/slurm-20.02.1.tar.bz2
+    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
     build-packages:
       - libhdf5-dev
       - python-dev

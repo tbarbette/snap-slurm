@@ -4,6 +4,7 @@ import os
 import sys
 import socket
 import subprocess
+from base64 import b64decode, b64encode
 from pathlib import Path
 
 
@@ -70,9 +71,12 @@ def configure_munge(munge_key_from_snap_config):
     # If the munge key in $SNAP_COMMON/etc/munge/munge.key and the key
     # obtained from snapctl get are identical, return.
     if munge_key_path.exists() and munge_key_from_snap_config is not None:
-        if munge_key_path.read_text() != munge_key_from_snap_config:
+        munge_key_str = b64encode(munge_key_path.read_bytes()).decode()
+        if munge_key_str != munge_key_from_snap_config:
+            munge_key_path.write_bytes(
+                b64decode(munge_key_from_snap_config.encode())
+            )
             munge_key_path.chmod(0o700)
-            munge_key_path.write_text(munge_key_from_snap_config)
         else:
             return
     # If the munge.key is not defined as a snap config AND the
@@ -84,7 +88,9 @@ def configure_munge(munge_key_from_snap_config):
     # write the snap munge.key config to the munge key file.
     elif not munge_key_path.exists() and \
             munge_key_from_snap_config is not None:
-        munge_key_path.write_text(munge_key_from_snap_config)
+        munge_key_path.write_bytes(
+            b64decode(munge_key_from_snap_config.encode())
+        )
     else:
         return
 
@@ -169,7 +175,10 @@ def render_slurm_conf():
         "Default=YES State=UP"
     )
 
-    # Load, merge and render the template and ctxt into the slurmdbd.conf.
+    if Path(f"{os.environ['SNAP_COMMON']}/slurmctld_hostname").exists():
+        ctxt['SlurmctldParameters'] = "enable_configless"
+
+    # Render the template.
     f = slurm_configurator_templates_base_path / "slurm.conf.tmpl"
     return f.read_text().format(**ctxt)
 
@@ -198,8 +207,9 @@ def configure_snap_mode_and_render_slurm_config(snap_mode_from_snap_config):
     slurm_conf_file = Path(
         f"{os.environ['SNAP_COMMON']}/etc/slurm/slurm.conf"
     )
-    slurm_conf_file.write_text(render_slurm_conf())
-    slurm_conf_file.chmod(0o777)
+    if snap_mode_from_snap_config == "all":
+        slurm_conf_file.write_text(render_slurm_conf())
+        slurm_conf_file.chmod(0o777)
 
 
 if __name__ == "__main__":
@@ -210,7 +220,7 @@ if __name__ == "__main__":
     stop_all_daemons()
 
     configure_munge(munge_key)
-    configure_snap_mode_and_render_slurm_config(snap_mode)
     configure_slurmctld_hostname(slurmctld_hostname)
+    configure_snap_mode_and_render_slurm_config(snap_mode)
 
     daemon_starter(snap_mode)
