@@ -174,6 +174,13 @@ def render_slurm_conf():
     return f.read_text().format(**ctxt)
 
 
+def configure_slurmctld_hostname(slurmctld_hostname):
+    """Write the slurmctld hostname to SNAP_COMMON."""
+    if slurmctld_hostname:
+        snap_common = Path(f"{os.environ['SNAP_COMMON']}")
+        (snap_common / "slurmctld_hostname").write_text(slurmctld_hostname)
+
+
 def configure_snap_mode_and_render_slurm_config(snap_mode_from_snap_config):
     snap_mode_path = Path(f"{os.environ['SNAP_COMMON']}/snap_mode")
 
@@ -198,10 +205,12 @@ def configure_snap_mode_and_render_slurm_config(snap_mode_from_snap_config):
 if __name__ == "__main__":
     snap_mode = snapctl_get("snap.mode")
     munge_key = snapctl_get("munge.key")
+    slurmctld_hostname = snapctl_get("slurmctld.hostname")
 
     stop_all_daemons()
 
     configure_munge(munge_key)
     configure_snap_mode_and_render_slurm_config(snap_mode)
+    configure_slurmctld_hostname(slurmctld_hostname)
 
     daemon_starter(snap_mode)
