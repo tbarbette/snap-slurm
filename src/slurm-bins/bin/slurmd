@@ -41,9 +41,3 @@ else
          "-L" "$SLURMD_LOG" \
          "-D" "$@"
 fi
-
-#exec "$SNAP/slurm-bins/slurmd" \
-#     "-f" "$SLURM_CONF" \
-#     "-d" "$SNAP/slurm-bins/slurmstepd" \
-#     "-L" "$SLURMD_LOG" \
-##     "-D" "$@"
