@@ -25,22 +25,22 @@ apps:
   slurmdbd:
     command: bin/slurmdbd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmctld:
     command: bin/slurmctld
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmd:
     command: bin/slurmd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmrestd:
     command: bin/slurmrestd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   sacct:
     command: bin/sacct
