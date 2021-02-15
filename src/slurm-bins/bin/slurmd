@@ -11,12 +11,13 @@ fi
 
 
 . "$SNAP/utilities/common-utilities"
-export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurm.conf
-export SLURMD_LOG=$SNAP_COMMON/var/log/slurm/slurmd.log
-
+export SLURM_CONF="$SNAP_COMMON/etc/slurm/slurm.conf"
+export SLURMD_LOG="$SNAP_COMMON/var/log/slurm/slurmd.log"
+export SLURMCTLD_HOSTNAME="$SNAP_COMMON/slurmctld_hostname"
 
 # Start slurmd only if we have a config file
-if ! [[ -f $SLURM_CONF ]]; then
+if [ ! -f $SLURM_CONF ] && [ ! -f $SLURMCTLD_HOSTNAME ]; then
+#if ! [[ -f $SLURM_CONF ]]; then
     pprint "No slurm conf, cannot start process.";
     exit -1
 else
@@ -24,8 +25,19 @@ else
 fi
 
 pprint "Starting SLURMD";
-exec "$SNAP/slurm-bins/slurmd" \
-    "-f" "$SLURM_CONF" \
-    "-d" "$SNAP/slurm-bins/slurmstepd" \
-    "-L" "$SLURMD_LOG" \
-    "-D" "$@"
+
+if [ ! -f $SLURMCTLD_HOSTNAME ]; then
+    exec "$SNAP/slurm-bins/slurmd" \
+         "-f" "$SLURM_CONF" \
+         "-d" "$SNAP/slurm-bins/slurmstepd" \
+         "-L" "$SLURMD_LOG" \
+         "-D" "$@"
+else
+    slurmctld=$(cat $SLURMCTLD_HOSTNAME)
+    exec "$SNAP/slurm-bins/slurmd" \
+	 "--conf-server" $slurmctld \
+         "-f" "$SLURM_CONF" \
+         "-d" "$SNAP/slurm-bins/slurmstepd" \
+         "-L" "$SLURMD_LOG" \
+         "-D" "$@"
+fi

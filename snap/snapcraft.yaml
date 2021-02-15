@@ -25,22 +25,22 @@ apps:
   slurmdbd:
     command: bin/slurmdbd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmctld:
     command: bin/slurmctld
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmd:
     command: bin/slurmd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   slurmrestd:
     command: bin/slurmrestd
     daemon: simple
-    restart-condition: on-failure
+    restart-condition: never
 
   sacct:
     command: bin/sacct
@@ -113,7 +113,7 @@ parts:
       - http-parser
       - munge
     plugin: dump
-    source: https://download.schedmd.com/slurm/slurm-20.02.1.tar.bz2
+    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
     build-packages:
       - libhdf5-dev
       - python-dev
