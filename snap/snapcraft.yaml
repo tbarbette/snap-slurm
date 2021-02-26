@@ -261,11 +261,6 @@ parts:
     plugin: make
     source-type: git
     source-tag: v2.9.4
-    build-packages:
-      - make
-      - gcc
-      - libtool
-      - autoconf
     make-parameters:
       - PREFIX=/usr
 
@@ -274,13 +269,6 @@ parts:
     plugin: autotools
     source-type: git
     source-tag: 0.2.5
-    build-packages:
-      - make
-      - gcc
-      - autoconf
-      - automake
-      - libtool
-      - autotools-dev
     autotools-configure-parameters:
       - --prefix=/usr
       - --sysconfdir=/etc
@@ -313,11 +301,8 @@ parts:
     stage-packages:
       - bzip2
     build-packages:
-      - autoconf
-      - automake
       - libpopt-dev
       - libtool
-      - make
       - xz-utils
     autotools-configure-parameters:
       - --prefix=/usr
