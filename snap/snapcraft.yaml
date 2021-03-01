@@ -199,11 +199,6 @@ parts:
     plugin: dump
     source: src/munge/
 
-  common:
-    plugin: dump
-    source: src/common/
-    source-type: local
-
   http-parser:
     source: https://github.com/nodejs/http-parser.git
     plugin: make
