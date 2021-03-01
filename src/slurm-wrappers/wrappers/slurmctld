@@ -25,7 +25,7 @@ else
 fi
 
 pprint "Starting SLURMCTLD";
-exec "$SNAP/slurm-bins/slurmctld" \
+exec "$SNAP/sbin/slurmctld" \
     "-f" "$SLURM_CONF" \
     "-L" "$SLURMCTLD_LOG" \
     "-D" "$@"

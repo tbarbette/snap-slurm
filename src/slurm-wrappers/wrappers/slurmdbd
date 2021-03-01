@@ -24,4 +24,4 @@ else
 fi
 
 pprint "Starting SLURMDBD";
-exec "$SNAP/slurm-bins/slurmdbd" "-D" "$@"
+exec "$SNAP/bins/slurmdbd" "-D" "$@"

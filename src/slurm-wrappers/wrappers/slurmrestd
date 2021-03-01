@@ -30,5 +30,5 @@ if ! [[ -f $SLURM_CONF ]]; then
 fi
 
 pprint "Starting SLURMRESTD";
-exec "$SNAP/slurm-bins/slurmrestd" \
+exec "$SNAP/sbin/slurmrestd" \
     "-f" "$SLURM_CONF" `hostname -s`:6820 "$@" 

@@ -5,4 +5,4 @@ set -e
 export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurm.conf
 
 
-exec "$SNAP/slurm-bins/sbcast" "$@"
+exec "$SNAP/bin/sbatch" "$@"

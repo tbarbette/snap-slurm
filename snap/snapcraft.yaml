@@ -18,75 +18,75 @@ apps:
     timer: "00:00-24:00/288"
 
   slurmdbd:
-    command: bin/slurmdbd
+    command: wrappers/slurmdbd
     daemon: simple
     restart-condition: never
 
   slurmctld:
-    command: bin/slurmctld
+    command: wrappers/slurmctld
     daemon: simple
     restart-condition: never
 
   slurmd:
-    command: bin/slurmd
+    command: wrappers/slurmd
     daemon: simple
     restart-condition: never
 
   slurmrestd:
-    command: bin/slurmrestd
+    command: wrappers/slurmrestd
     daemon: simple
     restart-condition: never
 
   sacct:
-    command: bin/sacct
+    command: wrappers/sacct
 
   sacctmgr:
-    command: bin/sacctmgr
+    command: wrappers/sacctmgr
 
   salloc:
-    command: bin/salloc
+    command: wrappers/salloc
 
   sattach:
-    command: bin/sattach
+    command: wrappers/sattach
 
   sbatch:
-    command: bin/sbatch
+    command: wrappers/sbatch
 
   sbcast:
-    command: bin/sbcast
+    command: wrappers/sbcast
 
   scancel:
-    command: bin/scancel
+    command: wrappers/scancel
 
   scontrol:
-    command: bin/scontrol
+    command: wrappers/scontrol
 
   sdiag:
-    command: bin/sdiag
+    command: wrappers/sdiag
 
   sinfo:
-    command: bin/sinfo
+    command: wrappers/sinfo
 
   sprio:
-    command: bin/sprio
+    command: wrappers/sprio
 
   squeue:
-    command: bin/squeue
+    command: wrappers/squeue
 
   sreport:
-    command: bin/sreport
+    command: wrappers/sreport
 
   srun:
-    command: bin/srun
+    command: wrappers/srun
 
   sshare:
-    command: bin/sshare
+    command: wrappers/sshare
 
   sstat:
-    command: bin/sstat
+    command: wrappers/sstat
 
   strigger:
-    command: bin/strigger
+    command: wrappers/strigger
 
   munged:
     daemon: simple
@@ -111,7 +111,7 @@ parts:
       - libyaml
       - http-parser
       - munge
-      - slurm-bins
+      - slurm-wrappers
     plugin: autotools
     source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
     build-packages:
@@ -151,7 +151,6 @@ parts:
       - --prefix=/usr
       - --sysconfdir=/etc
       - --localstatedir=/var/snap/slurm/common/etc/slurm
-      - --sbindir=/slurm-bins
       - --disable-developer
       - --disable-debug
       - --enable-slurmrestd
@@ -170,9 +169,9 @@ parts:
     plugin: dump
     source: src/slurm-configurator/
 
-  slurm-bins:
+  slurm-wrappers:
     plugin: dump
-    source: src/slurm-bins/
+    source: src/slurm-wrappers/
     source-type: local
 
   munge:
@@ -181,10 +180,7 @@ parts:
     source-type: git
     source-tag: munge-0.5.14
     build-packages:
-      - gcc
       - libssl-dev
-      - autoconf
-      - make
       - libtool
       - zlib1g-dev
       - libbz2-dev
