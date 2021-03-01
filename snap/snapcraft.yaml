@@ -102,7 +102,7 @@ apps:
     command: bin/mungekey
 
   version:
-    command: bin/slurm-version
+    command: wrappers/slurm-version
 
 parts:
   slurm:

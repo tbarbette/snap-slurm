@@ -21,7 +21,7 @@ if ! [[ -f $SLURM_CONF ]]; then
 fi
 
 printf "Starting SLURMCTLD";
-exec "$SNAP/sbin/slurmctld" \
+exec "$SNAP/usr/sbin/slurmctld" \
     "-f" "$SLURM_CONF" \
     "-L" "$SLURMCTLD_LOG" \
     "-D" "$@"

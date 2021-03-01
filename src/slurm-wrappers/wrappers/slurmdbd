@@ -18,4 +18,4 @@ if ! [[ -f $SLURM_CONF ]]; then
 fi
 
 printf "Starting SLURMDBD";
-exec "$SNAP/bins/slurmdbd" "-D" "$@"
+exec "$SNAP/usr/sbin/slurmdbd" "-D" "$@"

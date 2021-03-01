@@ -23,17 +23,17 @@ fi
 printf "Starting SLURMD";
 
 if [ ! -f $SLURMCTLD_HOSTNAME ]; then
-    exec "$SNAP/sbin/slurmd" \
+    exec "$SNAP/usr/bin/slurmd" \
          "-f" "$SLURM_CONF" \
-         "-d" "$SNAP/bin/slurmstepd" \
+         "-d" "$SNAP/usr/bin/slurmstepd" \
          "-L" "$SLURMD_LOG" \
          "-D" "$@"
 else
     slurmctld=$(cat $SLURMCTLD_HOSTNAME)
-    exec "$SNAP/sbin/slurmd" \
+    exec "$SNAP/usr/sbin/slurmd" \
 	 "--conf-server" $slurmctld \
          "-f" "$SLURM_CONF" \
-         "-d" "$SNAP/bin/slurmstepd" \
+         "-d" "$SNAP/usr/bin/slurmstepd" \
          "-L" "$SLURMD_LOG" \
          "-D" "$@"
 fi
