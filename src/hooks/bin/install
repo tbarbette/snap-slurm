@@ -8,7 +8,7 @@ set -eux
 #snapctl set snap.mode=$initial_snap_mode
 #echo $initial_snap_mode > "$SNAP_COMMON/snap_mode"
 #chmod 777 "$SNAP_COMMON/snap_mode"
-#
+
 ########################### $SNAP_COMMON/var/log and $SNAP_COMMON/var/run dirs ####################
 mkdir -p "$SNAP_COMMON/var/log"
 mkdir -p "$SNAP_COMMON/var/run"
@@ -50,28 +50,30 @@ mkdir -p "$SNAP_COMMON/etc/slurm/prolog.d/"
 #
 ## SLURM SNAP INIT UTIL DIR
 #mkdir -p "$SNAP_COMMON/etc/slurm-snap-init-utils"
-#
-#
-######################################### Create Munge Dirs #######################################
-##
-## This directory contains the daemon's secret key. The recommended permissions for it are 0700.
-#mkdir -p "$SNAP_COMMON/etc/munge"
-#chmod -R 0700 "$SNAP_COMMON/etc/munge"
-#
-## This directory contains the daemon's PRNG seed file. It is also where the daemon
-## creates pipes for authenticating clients via file-descriptor-passing. If the
-## file-descriptor-passing authentication method is being used, this directory must
-## allow execute permissions for all; however, it should not expose read permissions.
-## The recommended permissions for it are 0711.
-#mkdir -p "$SNAP_COMMON/var/lib/munge"
-#chmod -R 0711 "$SNAP_COMMON/var/lib/munge"
-#
-## This directory contains the Unix domain socket for clients to communicate with the daemon.
-## It also contains the daemon's pid file. This directory must allow execute permissions for all.
-## The recommended permissions for it are 0755.
-#mkdir -p "$SNAP_COMMON/var/run/munge"
-#chmod -R 0755 "$SNAP_COMMON/var/run/munge"
 
+
+######################################## Create Munge Dirs #######################################
+
+# This directory contains the daemon's secret key. The recommended permissions for it are 0700.
+mkdir -p "$SNAP_COMMON/etc/munge"
+chmod -R 0700 "$SNAP_COMMON/etc/munge"
+
+# This directory contains the daemon's PRNG seed file. It is also where the daemon
+# creates pipes for authenticating clients via file-descriptor-passing. If the
+# file-descriptor-passing authentication method is being used, this directory must
+# allow execute permissions for all; however, it should not expose read permissions.
+# The recommended permissions for it are 0711.
+mkdir -p "$SNAP_COMMON/var/lib/munge"
+chmod -R 0711 "$SNAP_COMMON/var/lib/munge"
+
+# This directory contains the Unix domain socket for clients to communicate with the daemon.
+# It also contains the daemon's pid file. This directory must allow execute permissions for all.
+# The recommended permissions for it are 0755.
+mkdir -p "$SNAP_COMMON/var/run/munge"
+chmod -R 0755 "$SNAP_COMMON/var/run/munge"
+
+
+#################### Logrotate ####################################
 # Copy the logrotate.conf into SNAP_COMMON
 mkdir -p "$SNAP_COMMON/etc/logrotate.d/"
 cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"

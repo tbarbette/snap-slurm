@@ -18,11 +18,6 @@ apps:
     command: usr/sbin/logrotate $SNAP_COMMON/etc/logrotate.conf
     timer: "00:00-24:00/288"
 
-#  munged:
-#    daemon: simple
-#    command: bin/munged
-#    restart-condition: never
-
   slurmdbd:
     command: bin/slurmdbd
     daemon: simple
@@ -94,15 +89,19 @@ apps:
   strigger:
     command: bin/strigger
 
-#  munge:
-#    command: bin/munge
-#  unmunge:
-#    command: bin/unmunge
-#  remunge:
-#    command: bin/remunge
-#  mungekey:
-#    command: bin/mungekey
-#
+  munged:
+    daemon: simple
+    command: bin/munged
+    restart-condition: never
+  munge:
+    command: bin/munge
+  unmunge:
+    command: bin/unmunge
+  remunge:
+    command: bin/remunge
+  mungekey:
+    command: bin/mungekey
+
   version:
     command: bin/slurm-version
 
@@ -215,42 +214,34 @@ parts:
     source: src/slurm-bins/
     source-type: local
 
-#  munge:
-#    plugin: dump
-#    source: https://github.com/dun/munge.git
-#    source-type: git
-#    source-tag: munge-0.5.14
-#    build-packages:
-#      - gcc
-#      - libssl-dev
-#      - autoconf
-#      - make
-#      - libtool
-#      - zlib1g-dev
-#      - libbz2-dev
-#      - libgcrypt20-dev
-#    stage-packages:
-#      - libc6
-#      - libbz2-1.0
-#      - zlib1g
-#    stage:
-#      - usr/
-#      - lib/
-#    prime:
-#      - usr/
-#      - lib/
-#    override-build: |
-#      snapcraftctl build
-#      ./bootstrap
-#      ./configure --prefix=/usr/local \
-#                  --sysconfdir=/etc \
-#                  --with-crypto-lib=libgcrypt
-#      make -j$(nproc)
-#      make install
-#  munge-customizations:
-#    plugin: dump
-#    source: src/munge/
-#
+  munge:
+    plugin: autotools
+    source: https://github.com/dun/munge.git
+    source-type: git
+    source-tag: munge-0.5.14
+    build-packages:
+      - gcc
+      - libssl-dev
+      - autoconf
+      - make
+      - libtool
+      - zlib1g-dev
+      - libbz2-dev
+      - libgcrypt20-dev
+    stage-packages:
+      - libbz2-1.0
+      - zlib1g
+      - libgcrypt20-dev
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
+      - --with-crypto-lib=libgcrypt
+      - --with-logrotatedir=/etc/logrotate.d
+
+  munge-customizations:
+    plugin: dump
+    source: src/munge/
+
   common:
     plugin: dump
     source: src/common/
@@ -272,9 +263,6 @@ parts:
     autotools-configure-parameters:
       - --prefix=/usr
       - --sysconfdir=/etc
-    override-build: |
-      ./bootstrap
-      snapcraftctl build
 
   json-c:
     source: https://github.com/json-c/json-c.git
