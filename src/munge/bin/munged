@@ -11,7 +11,7 @@ if ! [[ $snap_mode == "slurmdbd" || $snap_mode == "slurmctld" || $snap_mode == "
         exit 0
 fi
 
-exec "$SNAP/usr/local/sbin/munged" \
+exec "$SNAP/usr/sbin/munged" \
      "--key-file=$SNAP_COMMON/etc/munge/munge.key" \
      "--socket=/tmp/munged.socket.2" \
      "--pid-file=$SNAP_COMMON/var/run/munge/munged.pid" \
