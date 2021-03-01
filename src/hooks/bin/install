@@ -73,7 +73,10 @@ mkdir -p "$SNAP_COMMON/etc/slurm/prolog.d/"
 #chmod -R 0755 "$SNAP_COMMON/var/run/munge"
 
 # Copy the logrotate.conf into SNAP_COMMON
+mkdir -p "$SNAP_COMMON/etc/logrotate.d/"
 cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"
+cp "$SNAP/etc/logrotate.d/slurm" "$SNAP_COMMON/etc/logrotate.d/"
+cp "$SNAP/etc/logrotate.d/munge" "$SNAP_COMMON/etc/logrotate.d/"
 
 # Info for Slurm node configuration
 mkdir -p "$SNAP_COMMON/snap-resources"
