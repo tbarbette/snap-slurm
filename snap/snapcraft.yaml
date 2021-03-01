@@ -156,7 +156,7 @@ parts:
       - --disable-debug
       - --enable-slurmrestd
       - --with-libcurl
-      - --with-munge=/usr
+      - --with-munge=${SNAPCRAFT_STAGE}/usr
       - --with-http-parser=${SNAPCRAFT_STAGE}/usr
       - --with-yaml=${SNAPCRAFT_STAGE}/usr
       - --with-json=${SNAPCRAFT_STAGE}/usr
@@ -164,7 +164,6 @@ parts:
       - --with-hdf5
     override-build: |
       snapcraftctl build
-      ldconfig -n /snap/slurm/current/lib/slurm
       snapcraftctl set-version `cat META  | grep Version | awk '{print $2}'`
 
   slurm-configurator:

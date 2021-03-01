@@ -55,6 +55,8 @@ mkdir -p "$SNAP_COMMON/etc/slurm-snap-init-utils"
 mkdir -p "$SNAP_COMMON/snap-resources"
 lscpu > "$SNAP_COMMON/snap-resources/lscpu"
 
+# as per item 8 in the Slurm Super Quick Start
+ldconfig -n /snap/slurm/current/lib/slurm
 
 ######################################## Create Munge Dirs #######################################
 
