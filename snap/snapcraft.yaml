@@ -106,109 +106,72 @@ apps:
     command: bin/slurm-version
 
 parts:
-#  slurm:
-#    after:
-#      - json-c
-#      - libyaml
-#      - http-parser
-#      - munge
-#      - slurm-bins
-#    plugin: dump
-#    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
-#    build-packages:
-#      - libhdf5-dev
-#      - python-dev
-#      - libreadline-dev
-#      - liblua5.3-dev
-#      - libbz2-dev
-#      - bzip2
-#      - mysql-client
-#      - libmysqlclient-dev
-#      - liblz4-dev
-#      - libpmi1-pmix
-#      - freeipmi
-#      - rrdtool
-#      - libncurses5-dev
-#      - libglib2.0-dev
-#      - libibmad-dev
-#      - libibumad-dev
-#      - libcurl4-gnutls-dev
-#    stage-packages:
-#      - liblua5.3-dev
-#      - libmysqlclient-dev
-#      - libaec-dev
-#      - libhdf5-103
-#      - mailutils
-#      - util-linux
-#      - libibmad-dev
-#      - libibumad-dev
-#      - libbrotli1
-#      - libcurl3-gnutls
-#      - libnghttp2-14
-#      - libpsl5
-#      - librtmp1
-#      - libssh-4
-#    stage:
-#      - bin/
-#      - share/
-#      - sbin/
-#      - include/
-#      - lib/
-#      - etc/
-#      - usr/
-#      - slurm-bins/
-#    prime:
-#      - bin/
-#      - share/
-#      - sbin/
-#      - include/
-#      - lib/
-#      - etc/
-#      - usr/
-#      - slurm-bins/
-#    override-build: |
-#      snapcraftctl build
-#      ./configure \
-#          --enable-slurmrestd \
-#          --with-libcurl \
-#          --with-munge=$SNAPCRAFT_STAGE/usr/local \
-#          --with-http-parser=$SNAPCRAFT_STAGE/usr \
-#          --with-yaml=$SNAPCRAFT_STAGE/usr \
-#          --with-json=$SNAPCRAFT_STAGE/usr \
-#          --prefix=/usr/local \
-#          --sysconfdir=/etc \
-#          --localstatedir=/var/snap/slurm/common/etc/slurm \
-#          --with-ofed=$SNAPCRAFT_STAGE/usr/local
-#      make -j$(nproc)
-#      make install
-#      ldconfig -n /snap/slurm/current/lib/slurm
-#
-#      snapcraftctl set-version `cat META  | grep Version | awk '{print $2}'`
-#
-##     mkdir $SNAPCRAFT_PART_INSTALL/slurm-bins
-##     for slurm_bin in \
-##        sacct sacctmgr salloc sattach \
-##        sbatch sbcast scancel scontrol \
-##        sdiag  sinfo sprio squeue sreport \
-##        srun sshare sstat strigger; do
-##         mv $SNAPCRAFT_PART_INSTALL/bin/$slurm_bin $SNAPCRAFT_PART_INSTALL/slurm-bins/;
-##     done;
-#
-##     for slurm_bin in \
-##        slurmd slurmdbd slurmctld slurmstepd slurmrestd; do
-##         mv $SNAPCRAFT_PART_INSTALL/sbin/$slurm_bin $SNAPCRAFT_PART_INSTALL/slurm-bins/;
-##     done;
-#
-#  slurm-configurator:
-#    plugin: python
-#    source: src/slurm-configurator/
-#    stage:
-#      - -lib64/
-#      - templates/
-#    override-build: |
-#      snapcraftctl build
-#      cp -r $SNAPCRAFT_PART_BUILD/templates $SNAPCRAFT_PART_INSTALL/
-#
+  slurm:
+    after:
+      - json-c
+      - libyaml
+      - http-parser
+      - munge
+      - slurm-bins
+    plugin: autotools
+    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
+    build-packages:
+      - libhdf5-dev
+      - python-dev
+      - libreadline-dev
+      - liblua5.3-dev
+      - libbz2-dev
+      - bzip2
+      - mysql-client
+      - libmysqlclient-dev
+      - liblz4-dev
+      - libpmi1-pmix
+      - freeipmi
+      - rrdtool
+      - libncurses5-dev
+      - libglib2.0-dev
+      - libibmad-dev
+      - libibumad-dev
+      - libcurl4-gnutls-dev
+    stage-packages:
+      - liblua5.3-dev
+      - libmysqlclient-dev
+      - libaec-dev
+      - libhdf5-103
+      - mailutils
+      - util-linux
+      - libibmad-dev
+      - libibumad-dev
+      - libbrotli1
+      - libcurl3-gnutls
+      - libnghttp2-14
+      - libpsl5
+      - librtmp1
+      - libssh-4
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
+      - --localstatedir=/var/snap/slurm/common/etc/slurm
+      - --sbindir=/slurm-bins
+      - --disable-developer
+      - --disable-debug
+      - --enable-slurmrestd
+      - --with-libcurl
+      - --with-munge=/usr
+      - --with-http-parser=${SNAPCRAFT_STAGE}/usr
+      - --with-yaml=${SNAPCRAFT_STAGE}/usr
+      - --with-json=${SNAPCRAFT_STAGE}/usr
+      - --with-ofed=/usr
+      - --with-hdf5
+    override-build: |
+      snapcraftctl build
+      ldconfig -n /snap/slurm/current/lib/slurm
+      snapcraftctl set-version `cat META  | grep Version | awk '{print $2}'`
+
+  slurm-configurator:
+    plugin: dump
+    source: src/slurm-configurator/
+
   slurm-bins:
     plugin: dump
     source: src/slurm-bins/
@@ -279,8 +242,6 @@ parts:
     source: src/hooks/
     organize:
       bin/: snap/hooks/
-    prime:
-      - -snap/hooks/configure # TODO remove this line!!
 
   logrotate:
     plugin: autotools
