@@ -86,4 +86,4 @@ cp "$SNAP/etc/logrotate.d/slurm" "$SNAP_COMMON/etc/logrotate.d/"
 cp "$SNAP/etc/logrotate.d/munge" "$SNAP_COMMON/etc/logrotate.d/"
 
 # we need to ammend the munge config to rotate the logs in the snap fs
-perl -pi -e 's|^/usr/var/log|/var/snap/slurm/common/var/log|g' "$SNAP_COMMON/etc/logrotate.d/munge"
+sed -i 's|^/usr/var/log|/var/snap/slurm/common/var/log|g' "$SNAP_COMMON/etc/logrotate.d/munge"

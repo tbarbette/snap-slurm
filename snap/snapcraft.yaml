@@ -166,8 +166,14 @@ parts:
       snapcraftctl set-version `cat META  | grep Version | awk '{print $2}'`
 
   slurm-configurator:
-    plugin: dump
+    plugin: python
     source: src/slurm-configurator/
+    stage:
+      - -lib64/
+      - templates/
+    override-build: |
+      snapcraftctl build
+      cp -r $SNAPCRAFT_PART_BUILD/templates $SNAPCRAFT_PART_INSTALL/
 
   slurm-wrappers:
     plugin: dump
