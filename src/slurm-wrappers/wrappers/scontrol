@@ -8,4 +8,4 @@ export SNAP_COMMON=/var/snap/slurm/common
 export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurm.conf
 
 
-exec "$SNAP/slurm-bins/sinfo" "$@"
+exec "$SNAP/usr/bin/scontrol" "$@"

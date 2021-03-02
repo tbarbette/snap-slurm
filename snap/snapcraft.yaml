@@ -14,85 +14,84 @@ base: core20
 apps:
   logrotate:
     daemon: oneshot
-    command: sbin/logrotate $SNAP_COMMON/etc/logrotate.conf
+    command: usr/sbin/logrotate $SNAP_COMMON/etc/logrotate.conf
     timer: "00:00-24:00/288"
+
+  slurmdbd:
+    command: wrappers/slurmdbd
+    daemon: simple
+    restart-condition: never
+
+  slurmctld:
+    command: wrappers/slurmctld
+    daemon: simple
+    restart-condition: never
+
+  slurmd:
+    command: wrappers/slurmd
+    daemon: simple
+    restart-condition: never
+
+  slurmrestd:
+    command: wrappers/slurmrestd
+    daemon: simple
+    restart-condition: never
+
+  sacct:
+    command: wrappers/sacct
+
+  sacctmgr:
+    command: wrappers/sacctmgr
+
+  salloc:
+    command: wrappers/salloc
+
+  sattach:
+    command: wrappers/sattach
+
+  sbatch:
+    command: wrappers/sbatch
+
+  sbcast:
+    command: wrappers/sbcast
+
+  scancel:
+    command: wrappers/scancel
+
+  scontrol:
+    command: wrappers/scontrol
+
+  sdiag:
+    command: wrappers/sdiag
+
+  sinfo:
+    command: wrappers/sinfo
+
+  sprio:
+    command: wrappers/sprio
+
+  squeue:
+    command: wrappers/squeue
+
+  sreport:
+    command: wrappers/sreport
+
+  srun:
+    command: wrappers/srun
+
+  sshare:
+    command: wrappers/sshare
+
+  sstat:
+    command: wrappers/sstat
+
+  strigger:
+    command: wrappers/strigger
 
   munged:
     daemon: simple
     command: bin/munged
     restart-condition: never
-
-  slurmdbd:
-    command: bin/slurmdbd
-    daemon: simple
-    restart-condition: never
-
-  slurmctld:
-    command: bin/slurmctld
-    daemon: simple
-    restart-condition: never
-
-  slurmd:
-    command: bin/slurmd
-    daemon: simple
-    restart-condition: never
-
-  slurmrestd:
-    command: bin/slurmrestd
-    daemon: simple
-    restart-condition: never
-
-  sacct:
-    command: bin/sacct
-
-  sacctmgr:
-    command: bin/sacctmgr
-
-  salloc:
-    command: bin/salloc
-
-  sattach:
-    command: bin/sattach
-
-  sbatch:
-    command: bin/sbatch
-
-  sbcast:
-    command: bin/sbcast
-
-  scancel:
-    command: bin/scancel
-
-  scontrol:
-    command: bin/scontrol
-
-  sdiag:
-    command: bin/sdiag
-
-  sinfo:
-    command: bin/sinfo
-
-  sprio:
-    command: bin/sprio
-
-  squeue:
-    command: bin/squeue
-
-  sreport:
-    command: bin/sreport
-
-  srun:
-    command: bin/srun
-
-  sshare:
-    command: bin/sshare
-
-  sstat:
-    command: bin/sstat
-
-  strigger:
-    command: bin/strigger
-
   munge:
     command: bin/munge
   unmunge:
@@ -103,7 +102,7 @@ apps:
     command: bin/mungekey
 
   version:
-    command: bin/slurm-version
+    command: wrappers/slurm-version
 
 parts:
   slurm:
@@ -112,7 +111,8 @@ parts:
       - libyaml
       - http-parser
       - munge
-    plugin: dump
+      - slurm-wrappers
+    plugin: autotools
     source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
     build-packages:
       - libhdf5-dev
@@ -147,137 +147,74 @@ parts:
       - libpsl5
       - librtmp1
       - libssh-4
-    stage:
-      - bin/
-      - share/
-      - sbin/
-      - include/
-      - lib/
-      - etc/
-      - usr/
-      - slurm-bins/
-    prime:
-      - bin/
-      - share/
-      - sbin/
-      - include/
-      - lib/
-      - etc/
-      - usr/
-      - slurm-bins/
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
+      - --localstatedir=/var/snap/slurm/common/etc/slurm
+      - --disable-developer
+      - --disable-debug
+      - --enable-slurmrestd
+      - --with-libcurl
+      - --with-munge=${SNAPCRAFT_STAGE}/usr
+      - --with-http-parser=${SNAPCRAFT_STAGE}/usr
+      - --with-yaml=${SNAPCRAFT_STAGE}/usr
+      - --with-json=${SNAPCRAFT_STAGE}/usr
+      - --with-ofed=/usr
+      - --with-hdf5
     override-build: |
       snapcraftctl build
-      ./configure \
-          --enable-slurmrestd \
-          --with-libcurl \
-          --with-munge=$SNAPCRAFT_STAGE/usr/local \
-          --with-http-parser=$SNAPCRAFT_STAGE/usr/local \
-          --with-yaml=$SNAPCRAFT_STAGE/usr/local \
-          --with-json=$SNAPCRAFT_STAGE/usr/local \
-          --prefix=$SNAPCRAFT_PART_INSTALL \
-          --localstatedir=/var/snap/slurm/common/etc/slurm \
-          --with-ofed=$SNAPCRAFT_STAGE/usr/local
-      make -j$(nproc)
-      make install
-      ldconfig -n /snap/slurm/current/lib/slurm
-
       snapcraftctl set-version `cat META  | grep Version | awk '{print $2}'`
 
-      mkdir $SNAPCRAFT_PART_INSTALL/slurm-bins
-      for slurm_bin in \
-         sacct sacctmgr salloc sattach \
-         sbatch sbcast scancel scontrol \
-         sdiag  sinfo sprio squeue sreport \
-         srun sshare sstat strigger; do
-          mv $SNAPCRAFT_PART_INSTALL/bin/$slurm_bin $SNAPCRAFT_PART_INSTALL/slurm-bins/;
-      done;
+  slurm-configurator:
+    plugin: dump
+    source: src/slurm-configurator/
 
-      for slurm_bin in \
-         slurmd slurmdbd slurmctld slurmstepd slurmrestd; do
-          mv $SNAPCRAFT_PART_INSTALL/sbin/$slurm_bin $SNAPCRAFT_PART_INSTALL/slurm-bins/;
-      done;
+  slurm-wrappers:
+    plugin: dump
+    source: src/slurm-wrappers/
+    source-type: local
 
   munge:
-    plugin: dump
+    plugin: autotools
     source: https://github.com/dun/munge.git
     source-type: git
     source-tag: munge-0.5.14
     build-packages:
-      - gcc
       - libssl-dev
-      - autoconf
-      - make
       - libtool
       - zlib1g-dev
       - libbz2-dev
       - libgcrypt20-dev
     stage-packages:
-      - libc6
       - libbz2-1.0
       - zlib1g
-    stage:
-      - usr/
-      - lib/
-    prime:
-      - usr/
-      - lib/
-    override-build: |
-      snapcraftctl build
-      ./bootstrap
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local --with-crypto-lib=libgcrypt
-      make
-      make install
+      - libgcrypt20-dev
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
+      - --with-crypto-lib=libgcrypt
+      - --with-logrotatedir=/etc/logrotate.d
+
   munge-customizations:
     plugin: dump
     source: src/munge/
 
-  common:
-    plugin: dump
-    source: src/common/
-    source-type: local
-
   http-parser:
     source: https://github.com/nodejs/http-parser.git
-    plugin: dump
+    plugin: make
     source-type: git
     source-tag: v2.9.4
-    build-packages:
-      - make
-      - gcc
-      - libtool
-      - autoconf
-    stage:
-      - usr/
-    prime:
-      - usr/
-    override-build: |
-      snapcraftctl build
-      PREFIX=$SNAPCRAFT_PART_INSTALL/usr/local make
-      PREFIX=$SNAPCRAFT_PART_INSTALL/usr/local make install
-      PREFIX=$SNAPCRAFT_PART_INSTALL/usr/local make library
+    make-parameters:
+      - PREFIX=/usr
 
   libyaml:
     source: https://github.com/yaml/libyaml.git
-    plugin: dump
+    plugin: autotools
     source-type: git
     source-tag: 0.2.5
-    build-packages:
-      - make
-      - gcc
-      - autoconf
-      - automake
-      - libtool
-      - autotools-dev
-    stage:
-      - usr/
-    prime:
-      - usr/
-    override-build: |
-      snapcraftctl build
-      ./bootstrap
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/usr/local
-      make
-      make install
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
 
   json-c:
     source: https://github.com/json-c/json-c.git
@@ -285,26 +222,9 @@ parts:
     source-type: git
     source-tag: json-c-0.14-20200419
     cmake-parameters:
-      - -DCMAKE_INSTALL_PREFIX=/usr/local
-    stage:
-      - usr/
-    prime:
-      - usr/
-
-  slurm-configurator:
-    plugin: python
-    source: src/slurm-configurator/
-    stage:
-      - -lib64/
-      - templates/
-    override-build: |
-      snapcraftctl build
-      cp -r $SNAPCRAFT_PART_BUILD/templates $SNAPCRAFT_PART_INSTALL/
-
-  slurm-bins:
-    plugin: dump
-    source: src/slurm-bins/
-    source-type: local
+      - -DCMAKE_INSTALL_PREFIX=/usr
+      - -DCMAKE_BUILD_TYPE=Release
+        # TODO check the end path for this lib, looks weird
 
   hooks:
     plugin: dump
@@ -313,29 +233,22 @@ parts:
       bin/: snap/hooks/
 
   logrotate:
-    plugin: dump
+    plugin: autotools
     source: https://github.com/logrotate/logrotate.git
-    source-tag: 3.17.0
+    source-tag: 3.18.0
     stage-packages:
       - bzip2
     build-packages:
-      - autoconf
-      - automake
       - libpopt-dev
       - libtool
-      - make
       - xz-utils
+    autotools-configure-parameters:
+      - --prefix=/usr
+      - --sysconfdir=/etc
     override-build: |
-      snapcraftctl build
       autoreconf -fiv
-      ./configure --prefix=$SNAPCRAFT_PART_INSTALL/
-      make
-      make install
-    stage:
-      - sbin/
-      - lib/
-      - lib64/
-      - bin/
+      snapcraftctl build
+
   logrotate-conf:
     plugin: dump
     source: src/logrotate/

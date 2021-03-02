@@ -1,0 +1,13 @@
+/var/snap/slurm/common/var/log/slurm/*.log {
+    su root root
+    dateext
+    dateformat .%Y-%m-%d-%s
+    size 5M
+    missingok
+    rotate 5
+    compress
+    delaycompress
+    compresscmd /snap/slurm/current/bin/bzip2
+    compressext .bz2
+    notifempty
+}

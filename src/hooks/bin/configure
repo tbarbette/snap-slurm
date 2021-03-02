@@ -17,7 +17,6 @@ SNAP_MODE_PROCESS_MAP = {
         "munged",
         "slurmctld",
         "slurmd",
-        "slurmrestd",
     ],
     "none": [],
 }

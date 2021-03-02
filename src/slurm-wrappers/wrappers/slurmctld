@@ -10,22 +10,18 @@ if ! [[ $snap_mode == "slurmctld" || $snap_mode = "all" ]]; then
 fi
 
 
-. "$SNAP/utilities/common-utilities"
 export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurm.conf
 export SLURMCTLD_LOG=$SNAP_COMMON/var/log/slurm/slurmctld.log
-export SLURMD_INIT=$SNAP_COMMON/etc/slurm-snap-init-utils/slurmd-init-complete
 
 
 # Start slurmctld only if we have a config file
 if ! [[ -f $SLURM_CONF ]]; then
-    pprint "No slurm conf, cannot start process.";
+    printf "No slurm conf, cannot start process.";
     exit -1
-else
-    touch $SNAP_COMMON/etc/slurm-snap-init-utils/slurmctld-init-complete
 fi
 
-pprint "Starting SLURMCTLD";
-exec "$SNAP/slurm-bins/slurmctld" \
+printf "Starting SLURMCTLD";
+exec "$SNAP/usr/sbin/slurmctld" \
     "-f" "$SLURM_CONF" \
     "-L" "$SLURMCTLD_LOG" \
     "-D" "$@"

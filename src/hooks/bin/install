@@ -9,12 +9,12 @@ snapctl set snap.mode=$initial_snap_mode
 echo $initial_snap_mode > "$SNAP_COMMON/snap_mode"
 chmod 777 "$SNAP_COMMON/snap_mode"
 
-########################### $SNAP_COMMON/var/log and $SNAP_COMMON/var/run dirs ####################
+########################### $SNAP_COMMON/var/log and $SNAP_COMMON/var/run dirs ###################
 mkdir -p "$SNAP_COMMON/var/log"
 mkdir -p "$SNAP_COMMON/var/run"
 
 
-################################### CREATE DIRS NEEDED BY SLURM ###################################
+################################### CREATE DIRS NEEDED BY SLURM ##################################
 # SLURM LOG DIR
 mkdir -p "$SNAP_COMMON/var/log/slurm"
 
@@ -51,9 +51,15 @@ chmod -R 775 "$SNAP_COMMON/etc/slurm"
 # SLURM SNAP INIT UTIL DIR
 mkdir -p "$SNAP_COMMON/etc/slurm-snap-init-utils"
 
+# Info for Slurm node configuration
+mkdir -p "$SNAP_COMMON/snap-resources"
+lscpu > "$SNAP_COMMON/snap-resources/lscpu"
+
+# as per item 8 in the Slurm Super Quick Start
+ldconfig -n /snap/slurm/current/lib/slurm
 
 ######################################## Create Munge Dirs #######################################
-#
+
 # This directory contains the daemon's secret key. The recommended permissions for it are 0700.
 mkdir -p "$SNAP_COMMON/etc/munge"
 chmod -R 0700 "$SNAP_COMMON/etc/munge"
@@ -72,9 +78,13 @@ chmod -R 0711 "$SNAP_COMMON/var/lib/munge"
 mkdir -p "$SNAP_COMMON/var/run/munge"
 chmod -R 0755 "$SNAP_COMMON/var/run/munge"
 
-# Copy the logrotate.conf into SNAP_COMMON
-cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"
 
-# Info for Slurm node configuration
-mkdir -p "$SNAP_COMMON/snap-resources"
-lscpu > "$SNAP_COMMON/snap-resources/lscpu"
+#################### Logrotate ####################################
+# Copy the logrotate.conf into SNAP_COMMON
+mkdir -p "$SNAP_COMMON/etc/logrotate.d/"
+cp "$SNAP/etc/logrotate.conf" "$SNAP_COMMON/etc/logrotate.conf"
+cp "$SNAP/etc/logrotate.d/slurm" "$SNAP_COMMON/etc/logrotate.d/"
+cp "$SNAP/etc/logrotate.d/munge" "$SNAP_COMMON/etc/logrotate.d/"
+
+# we need to ammend the munge config to rotate the logs in the snap fs
+perl -pi -e 's|^/usr/var/log|/var/snap/slurm/common/var/log|g' "$SNAP_COMMON/etc/logrotate.d/munge"

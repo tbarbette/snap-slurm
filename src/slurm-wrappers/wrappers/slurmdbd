@@ -3,6 +3,11 @@
 
 set -e
 
+export SNAP=/snap/slurm/current
+export SNAP_COMMON=/var/snap/slurm/common
+
+export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurmdbd.conf
+
 # Only proceed if the snap.mode is set to one of
 # "slurmdbd", "all", or "slurmdbd+manual"
 snap_mode=$(cat $SNAP_COMMON/snap_mode)
@@ -11,17 +16,11 @@ if ! [[ $snap_mode == "slurmdbd" ]]; then
 fi
 
 
-. "$SNAP/utilities/common-utilities"
-export SLURM_CONF=$SNAP_COMMON/etc/slurm/slurmdbd.conf
-
-
 # Start slurmdbd only if we have a config file
 if ! [[ -f $SLURM_CONF ]]; then
-    pprint "No slurm conf, cannot start process.";
+    printf "No slurm conf, cannot start process.";
     exit -1
-else
-    touch $SNAP_COMMON/etc/slurm-snap-init-utils/slurmdbd-init-complete
 fi
 
-pprint "Starting SLURMDBD";
-exec "$SNAP/slurm-bins/slurmdbd" "-D" "$@"
+printf "Starting SLURMDBD";
+exec "$SNAP/usr/sbin/slurmdbd" "-D" "$@"
