@@ -112,8 +112,9 @@ parts:
       - http-parser
       - munge
       - slurm-wrappers
+      - libjwt
     plugin: autotools
-    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
+    source: https://download.schedmd.com/slurm/slurm-20.11.4.tar.bz2
     build-packages:
       - libhdf5-dev
       - python-dev
@@ -159,6 +160,7 @@ parts:
       - --with-http-parser=${SNAPCRAFT_STAGE}/usr
       - --with-yaml=${SNAPCRAFT_STAGE}/usr
       - --with-json=${SNAPCRAFT_STAGE}/usr
+      - --with-jwt=${SNAPCRAFT_STAGE}/usr
       - --with-ofed=/usr
       - --with-hdf5
     override-build: |
@@ -212,6 +214,19 @@ parts:
     source-tag: v2.9.4
     make-parameters:
       - PREFIX=/usr
+
+  libjwt:
+    plugin: autotools
+    source: https://github.com/benmcollins/libjwt.git
+    source-type: git
+    source-branch: v1.12.0 
+    build-packages:
+      - libjansson-dev
+      - libjansson4
+    stage-packages:
+      - libjansson4
+    autotools-configure-parameters:
+      - --prefix=/usr
 
   libyaml:
     source: https://github.com/yaml/libyaml.git
