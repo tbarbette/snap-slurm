@@ -19,6 +19,12 @@ if ! [[ -f $SLURM_CONF ]]; then
     exit -1
 fi
 
+
+# Export empty SLURM_JWT to activate the jwt auth plugin in slurmrestd.
+# https://slurm.schedmd.com/rest.html
+export SLURM_JWT=
+
+
 printf "Starting SLURMRESTD";
 exec "$SNAP/usr/sbin/slurmrestd" \
     "-f" "$SLURM_CONF" `hostname -s`:6820 "$@" 
