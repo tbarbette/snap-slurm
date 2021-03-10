@@ -114,7 +114,7 @@ parts:
       - slurm-wrappers
       - libjwt
     plugin: autotools
-    source: https://download.schedmd.com/slurm/slurm-20.11.4.tar.bz2
+    source: https://download.schedmd.com/slurm/slurm-20.11.3.tar.bz2
     build-packages:
       - libhdf5-dev
       - python-dev
