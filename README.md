@@ -160,5 +160,29 @@ If you are using the Slurm Snap installed from the Github Release, all commands 
 $ slurm.srun -p debug -n 1 uname -a
 ```
 
+### Worker node installation
+In general, you will want a frontend note installed with `snap.mode=all`, and many "worker" nodes connected to the frontend with `snap.mode=slurmd`. You also need to share the `munge.key` and have the same `slurm.conf` on all nodes.
+
+These are the basic steps to install slurm on the worker nodes:
+```bash
+snap install slurm --classic
+snap set slurm snap.mode=slurmd
+cp munge.key /var/snap/slurm/common/etc/munge/
+cp slurm.conf /var/snap/slurm/common/etc/slurm/slurm.conf
+sudo scontrol update nodename=$(hostname) state=idle
+```
+The following are sample SlurmCtldHost, NodeName list, and PartitionName variables to have at the end of slurm.conf for a cluster of 3 machines, where the first "frontend" (node001) is not part of the cluster itself:
+
+```bash
+SlurmctldHost=node001
+
+NodeName=node002 NodeAddr=node002 CPUs=16 ThreadsPerCore=2 CoresPerSocket=8 Sockets=1
+NodeName=node003 NodeAddr=node003 CPUs=16 ThreadsPerCore=2 CoresPerSocket=8 Sockets=1
+
+PartitionName=cluster Nodes=node[002-003] Default=YES State=UP
+```
+
+
+
 ### Copyright
 * OmniVector Solutions <admin@omnivector.solutions>
